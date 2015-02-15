@@ -25,23 +25,20 @@
             "MaxValue": 12
         },
         "ElkInstanceType": {
-            "Description": "EC2 instance type",
+            "Description": "EC2 instance type. Must support HVM AMIs.",
             "Type": "String",
-            "Default": "m1.large",
+            "Default": "m3.large",
             "AllowedValues": [
-                "t1.micro",
                 "t2.micro",
                 "t2.small",
                 "t2.medium",
-                "m1.small",
-                "m1.medium",
-                "m1.large",
+                "m2.xlarge",
                 "m3.medium",
                 "m3.large",
                 "m3.xlarge",
                 "m3.2xlarge",
-                "c1.medium",
-                "c3.large"
+                "c3.large",
+                "c4.large"
             ],
             "ConstraintDescription": "must be a valid EC2 instance type"
         },
@@ -71,14 +68,15 @@
 
     "Mappings" : {
         "RegionMap" : {
-            "us-east-1" :      { "ImageId": "ami-408c7f28" },
-            "us-west-2" :      { "ImageId": "ami-f34032c3" },
-            "us-west-1" :      { "ImageId": "ami-a26265e7" },
-            "eu-west-1" :      { "ImageId": "ami-cb4986bc" },
-            "ap-southeast-1" : { "ImageId": "ami-506d3102" },
-            "ap-southeast-2" : { "ImageId": "ami-7bb8dd41" },
-            "ap-northeast-1" : { "ImageId": "ami-19dd9218" },
-            "sa-east-1" :      { "ImageId": "ami-8f0aa692" }
+            "us-east-1" :      { "ImageId": "ami-9a562df2" },
+            "us-west-2" :      { "ImageId": "ami-29ebb519" },
+            "us-west-1" :      { "ImageId": "ami-5c120b19" },
+            "eu-west-1" :      { "ImageId": "ami-234ecc54" },
+            "eu-central-1" :   { "ImageId": "ami-9a380b87" },
+            "ap-southeast-1" : { "ImageId": "ami-ca381398" },
+            "ap-southeast-2" : { "ImageId": "ami-abeb9e91" },
+            "ap-northeast-1" : { "ImageId": "ami-20b6aa21" },
+            "sa-east-1" :      { "ImageId": "ami-69f54974" }
         }
     },
 
@@ -151,6 +149,10 @@
             "Type": "AWS::AutoScaling::LaunchConfiguration",
             "Properties": {
                 "ImageId": { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "ImageId" ]},
+                "BlockDeviceMappings" : [ {
+                    "DeviceName" : "/dev/sda1",
+                    "Ebs" : { "VolumeSize" : "120" }
+                } ],                
                 "SecurityGroups": [ { "Ref": "ElkSecurityGroup" } ],
                 "InstanceType": { "Ref": "ElkInstanceType" },
                 "IamInstanceProfile": { "Ref": "InstanceProfile" },
